@@ -1,32 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:helloworls/core/secrets/app_secrets.dart';
 import 'package:helloworls/core/theme/theme.dart';
-import 'package:helloworls/features/data/dataasources/auth_remote_data_sources.dart';
-import 'package:helloworls/features/data/repositories/auth_repository.dart';
-import 'package:helloworls/features/domain/usecases/user_sign_up.dart';
-import 'package:helloworls/features/presentation/bloc/auth_bloc.dart';
-import 'package:helloworls/features/presentation/pages/loginin_page.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:helloworls/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:helloworls/features/auth/presentation/pages/loginin_page.dart';
+import 'package:helloworls/init_dependencies.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final supabase = await Supabase.initialize(
-    url: AppSecrets.supabaseUrl,
-    anonKey: AppSecrets.supabaseAnnonKey,
-  );
+  await initDependencies();
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider(
-        create: (_) => AuthBloc(
-          userSignUp: UserSignUp(
-            AuthRepositoryImp(
-              AuthRemoteDataSourceImp(
-                supabase.client,
-              ),
-            ),
-          ),
-        ),
+        create: (_) => serviceLocator<AuthBloc>(),
       ),
     ],
     child: const SmartCradleApp(),
